@@ -28,10 +28,10 @@
 
 ## Phase 4: Escalation And Tickets
 
-- [ ] Add intent and risk classification.
-- [ ] Add escalation rules.
-- [ ] Add ticket creation service.
-- [ ] Add admin ticket endpoints.
+- [x] Add intent and risk classification.
+- [x] Add escalation rules.
+- [x] Add ticket creation service.
+- [x] Add admin ticket endpoints.
 
 ## Phase 5: Evaluation
 

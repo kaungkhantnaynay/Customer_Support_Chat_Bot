@@ -10,6 +10,8 @@ from app.schemas.chat import (
     FeedbackRequest,
     FeedbackResponse,
 )
+from app.services.escalation import EscalationService
+from app.services.tickets import TicketService
 
 MIN_GROUNDED_SCORE = 0.12
 
@@ -17,6 +19,8 @@ MIN_GROUNDED_SCORE = 0.12
 class ChatService:
     def __init__(self, session: Session) -> None:
         self.session = session
+        self.escalation_service = EscalationService()
+        self.ticket_service = TicketService(session)
 
     def answer(self, request: ChatRequest) -> ChatResponse:
         conversation = self._get_or_create_conversation(request.conversation_id)
@@ -29,9 +33,14 @@ class ChatService:
 
         knowledge_base = LocalKnowledgeBase.from_directory(settings.knowledge_base_dir)
         results = knowledge_base.search(request.message, limit=3, min_score=MIN_GROUNDED_SCORE)
-        answer, confidence, needs_escalation, escalation_reason = self._build_answer(
+        answer, confidence, base_needs_escalation, base_escalation_reason = self._build_answer(
             request.message,
             results,
+        )
+        escalation_decision = self.escalation_service.classify(
+            request.message,
+            confidence,
+            existing_reason=base_escalation_reason if base_needs_escalation else None,
         )
         citations = [result.citation for result in results]
 
@@ -43,17 +52,30 @@ class ChatService:
             confidence=confidence,
         )
         self.session.add(assistant_message)
+        self.session.flush()
+
+        ticket_id = None
+        if escalation_decision.needs_escalation:
+            ticket = self.ticket_service.create_ticket(
+                conversation_id=conversation.id,
+                message_id=assistant_message.id,
+                customer_message=request.message,
+                decision=escalation_decision,
+            )
+            ticket_id = ticket.id
+
         self.session.commit()
         self.session.refresh(assistant_message)
 
         return ChatResponse(
             conversation_id=conversation.id,
             message_id=assistant_message.id,
+            ticket_id=ticket_id,
             answer=answer,
             citations=citations,
             confidence=confidence,
-            needs_escalation=needs_escalation,
-            escalation_reason=escalation_reason,
+            needs_escalation=escalation_decision.needs_escalation,
+            escalation_reason=escalation_decision.reason,
         )
 
     def save_feedback(self, request: FeedbackRequest) -> FeedbackResponse:

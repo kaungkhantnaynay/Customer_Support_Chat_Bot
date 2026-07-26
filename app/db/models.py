@@ -26,6 +26,10 @@ class Conversation(Base):
         back_populates="conversation",
         cascade="all, delete-orphan",
     )
+    tickets: Mapped[list["Ticket"]] = relationship(
+        back_populates="conversation",
+        cascade="all, delete-orphan",
+    )
 
 
 class Message(Base):
@@ -61,3 +65,29 @@ class Feedback(Base):
     )
 
     conversation: Mapped[Conversation] = relationship(back_populates="feedback_items")
+
+
+class Ticket(Base):
+    __tablename__ = "tickets"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    conversation_id: Mapped[int] = mapped_column(ForeignKey("conversations.id"), nullable=False)
+    message_id: Mapped[int | None] = mapped_column(ForeignKey("messages.id"), nullable=True)
+    status: Mapped[str] = mapped_column(String(30), default="open", nullable=False)
+    priority: Mapped[str] = mapped_column(String(20), nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    customer_message: Mapped[str] = mapped_column(Text, nullable=False)
+    assigned_team: Mapped[str] = mapped_column(String(80), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    conversation: Mapped[Conversation] = relationship(back_populates="tickets")

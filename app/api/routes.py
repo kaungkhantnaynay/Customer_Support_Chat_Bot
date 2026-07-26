@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -9,7 +9,9 @@ from app.rag.retriever import LocalKnowledgeBase
 from app.schemas.chat import ChatRequest, ChatResponse, FeedbackRequest, FeedbackResponse
 from app.schemas.health import HealthResponse
 from app.schemas.knowledge import KnowledgeSearchResponse, KnowledgeSearchResult
+from app.schemas.ticket import TicketListResponse, TicketResponse, TicketUpdateRequest
 from app.services.chat import ChatService
+from app.services.tickets import TicketService
 
 router = APIRouter()
 
@@ -67,3 +69,37 @@ async def feedback(
 ) -> FeedbackResponse:
     service = ChatService(session)
     return service.save_feedback(request)
+
+
+@router.get("/admin/tickets", response_model=TicketListResponse, tags=["admin"])
+async def list_tickets(
+    session: Annotated[Session, Depends(get_session)],
+    status: str | None = Query(default=None),
+) -> TicketListResponse:
+    service = TicketService(session)
+    return service.list_tickets(status=status)
+
+
+@router.get("/admin/tickets/{ticket_id}", response_model=TicketResponse, tags=["admin"])
+async def get_ticket(
+    ticket_id: int,
+    session: Annotated[Session, Depends(get_session)],
+) -> TicketResponse:
+    service = TicketService(session)
+    ticket = service.get_ticket(ticket_id)
+    if ticket is None:
+        raise HTTPException(status_code=404, detail="Ticket not found.")
+    return ticket
+
+
+@router.patch("/admin/tickets/{ticket_id}", response_model=TicketResponse, tags=["admin"])
+async def update_ticket(
+    ticket_id: int,
+    request: TicketUpdateRequest,
+    session: Annotated[Session, Depends(get_session)],
+) -> TicketResponse:
+    service = TicketService(session)
+    ticket = service.update_ticket(ticket_id, request)
+    if ticket is None:
+        raise HTTPException(status_code=404, detail="Ticket not found.")
+    return ticket

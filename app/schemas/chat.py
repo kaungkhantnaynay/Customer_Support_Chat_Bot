@@ -13,6 +13,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     conversation_id: int
     message_id: int
+    ticket_id: int | None = None
     answer: str
     citations: list[str]
     confidence: Confidence

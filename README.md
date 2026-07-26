@@ -46,6 +46,8 @@ Step 2 adds a searchable local knowledge base with sample support documents, chu
 
 Step 3 adds a grounded chat API, local conversation/message storage, refusal behavior for weak context, and user feedback capture.
 
+Step 4 adds deterministic escalation rules, automatic ticket creation, and admin ticket endpoints.
+
 ## Current Endpoints
 
 ```text
@@ -53,6 +55,9 @@ GET /health
 GET /knowledge/search?q=refund
 POST /chat
 POST /feedback
+GET /admin/tickets
+GET /admin/tickets/{ticket_id}
+PATCH /admin/tickets/{ticket_id}
 ```
 
 Read the phase explanations here:
@@ -61,4 +66,5 @@ Read the phase explanations here:
 docs/PHASE_1_FOUNDATION.md
 docs/PHASE_2_KNOWLEDGE_BASE.md
 docs/PHASE_3_CHAT_API.md
+docs/PHASE_4_ESCALATION_AND_TICKETS.md
 ```

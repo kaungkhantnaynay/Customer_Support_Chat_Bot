@@ -1,0 +1,81 @@
+name: Quality checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.14"]
+    env:
+      AI_MODE: offline
+      OPENAI_API_KEY: ""
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.13"
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+      - name: Install locked runtime and test dependencies
+        id: dependencies
+        run: uv sync --locked --group dev
+      - name: Lint
+        run: uv run --no-sync ruff check .
+      - name: Tests
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: uv run --no-sync pytest -q
+      - name: Offline evaluation
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: uv run --no-sync python scripts/run_evaluation.py --report reports/evaluation.json
+      - name: Upload evaluation report
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: evaluation-python-${{ matrix.python-version }}
+          path: reports/evaluation.json
+          if-no-files-found: error
+          retention-days: 14
+
+  postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      database:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_PASSWORD: ci-test-only
+          POSTGRES_DB: support_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d support_test"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      AI_MODE: offline
+      OPENAI_API_KEY: ""
+      TEST_POSTGRES_URL: postgresql+psycopg://postgres:ci-test-only@localhost:5432/support_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.13"
+          python-version: "3.12"
+      - run: uv sync --locked --group dev
+      - run: uv run --no-sync pytest tests/test_postgres.py -q

@@ -12,3 +12,6 @@ build/
 *.egg-info/
 data/vector_store/
 data/*.db
+
+# Generated evaluation reports
+reports/

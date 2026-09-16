@@ -1,0 +1,4 @@
+{"id":"grounded_shipping","question":"When will express delivery arrive?","answer":"Express shipping takes 1 to 2 business days.","source_ids":["shipping::chunk-1"],"insufficient_context":false,"accepted":true}
+{"id":"invented_source","question":"When will express delivery arrive?","answer":"It arrives today.","source_ids":["invented::chunk-1"],"insufficient_context":false,"accepted":false}
+{"id":"missing_citation","question":"When will express delivery arrive?","answer":"It arrives today.","source_ids":[],"insufficient_context":false,"accepted":false}
+{"id":"model_abstains","question":"Can you guarantee delivery by noon?","answer":"I cannot confirm that.","source_ids":[],"insufficient_context":true,"accepted":false}

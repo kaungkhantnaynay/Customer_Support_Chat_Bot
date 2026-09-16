@@ -1,0 +1,43 @@
+x-app: &app
+  image: customer-support-ai:local
+  build: .
+  environment: &environment
+    APP_ENV: production
+    DATABASE_URL: postgresql+psycopg://support:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/support
+    KNOWLEDGE_BASE_DIR: data/knowledge_base
+    AI_MODE: ${AI_MODE:-offline}
+    VECTOR_STORE: ${VECTOR_STORE:-local}
+    ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+    ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: support
+      POSTGRES_USER: support
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U support -d support"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  migrate:
+    <<: *app
+    command: ["uv", "run", "--no-sync", "python", "scripts/migrate_database.py"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  support-ai:
+    <<: *app
+    ports:
+      - "127.0.0.1:${SUPPORT_PORT:-8000}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  postgres-data:

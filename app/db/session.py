@@ -4,14 +4,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import settings
-from app.db.models import Base
+from app.db.migrations import require_current_schema
+from app.db.urls import sync_database_url
 
-
-def _sync_database_url(database_url: str) -> str:
-    return database_url.replace("sqlite+aiosqlite:///", "sqlite:///")
-
-
-engine = create_engine(_sync_database_url(settings.database_url))
+engine = create_engine(sync_database_url(settings.database_url), pool_pre_ping=True)
 SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 _initialized = False
 
@@ -21,7 +17,7 @@ def init_db() -> None:
     if _initialized:
         return
 
-    Base.metadata.create_all(bind=engine)
+    require_current_schema(engine)
     _initialized = True
 
 

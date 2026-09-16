@@ -5,6 +5,7 @@ from app.main import app
 
 def test_chat_endpoint_returns_grounded_answer_without_ticket_for_routine_question() -> None:
     client = TestClient(app)
+    client.auth = ("admin", "test-admin-password")
 
     response = client.post(
         "/chat",
@@ -18,6 +19,7 @@ def test_chat_endpoint_returns_grounded_answer_without_ticket_for_routine_questi
     assert payload["ticket_id"] is None
     assert "Shipping Policy" in payload["answer"]
     assert payload["citations"]
+    assert payload["citations"] == ["Shipping Policy (data/knowledge_base/shipping_policy.md)"]
     assert any("Shipping Policy" in citation for citation in payload["citations"])
     assert payload["confidence"] in {"high", "medium"}
     assert payload["needs_escalation"] is False
@@ -25,6 +27,7 @@ def test_chat_endpoint_returns_grounded_answer_without_ticket_for_routine_questi
 
 def test_chat_endpoint_creates_ticket_for_duplicate_billing() -> None:
     client = TestClient(app)
+    client.auth = ("admin", "test-admin-password")
 
     response = client.post(
         "/chat",
@@ -50,6 +53,7 @@ def test_chat_endpoint_creates_ticket_for_duplicate_billing() -> None:
 
 def test_chat_endpoint_refuses_when_context_is_missing() -> None:
     client = TestClient(app)
+    client.auth = ("admin", "test-admin-password")
 
     response = client.post(
         "/chat",
@@ -68,6 +72,7 @@ def test_chat_endpoint_refuses_when_context_is_missing() -> None:
 
 def test_chat_endpoint_can_continue_existing_conversation() -> None:
     client = TestClient(app)
+    client.auth = ("admin", "test-admin-password")
 
     first_response = client.post(
         "/chat",
@@ -79,6 +84,7 @@ def test_chat_endpoint_can_continue_existing_conversation() -> None:
         "/chat",
         json={
             "conversation_id": conversation_id,
+            "conversation_token": first_response.json()["conversation_token"],
             "message": "Can I track the package too?",
         },
     )
@@ -89,6 +95,7 @@ def test_chat_endpoint_can_continue_existing_conversation() -> None:
 
 def test_feedback_endpoint_records_customer_feedback() -> None:
     client = TestClient(app)
+    client.auth = ("admin", "test-admin-password")
 
     chat_response = client.post(
         "/chat",
@@ -100,6 +107,7 @@ def test_feedback_endpoint_records_customer_feedback() -> None:
         "/feedback",
         json={
             "conversation_id": chat_payload["conversation_id"],
+            "conversation_token": chat_payload["conversation_token"],
             "message_id": chat_payload["message_id"],
             "rating": 5,
             "comment": "Helpful answer.",
@@ -114,6 +122,7 @@ def test_feedback_endpoint_records_customer_feedback() -> None:
 
 def test_chat_endpoint_validates_short_messages() -> None:
     client = TestClient(app)
+    client.auth = ("admin", "test-admin-password")
 
     response = client.post("/chat", json={"message": "?"})
 
@@ -122,6 +131,7 @@ def test_chat_endpoint_validates_short_messages() -> None:
 
 def test_admin_can_list_and_update_tickets() -> None:
     client = TestClient(app)
+    client.auth = ("admin", "test-admin-password")
 
     chat_response = client.post(
         "/chat",
@@ -148,6 +158,7 @@ def test_admin_can_list_and_update_tickets() -> None:
 
 def test_admin_ticket_detail_returns_404_for_missing_ticket() -> None:
     client = TestClient(app)
+    client.auth = ("admin", "test-admin-password")
 
     response = client.get("/admin/tickets/999999")
 

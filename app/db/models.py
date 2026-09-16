@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, func
+from pgvector.sqlalchemy import Vector
+from sqlalchemy import JSON, DateTime, ForeignKey, Index, Integer, String, Text, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -91,3 +92,34 @@ class Ticket(Base):
     )
 
     conversation: Mapped[Conversation] = relationship(back_populates="tickets")
+
+
+class ConversationAccess(Base):
+    __tablename__ = "conversation_access"
+
+    conversation_id: Mapped[int] = mapped_column(ForeignKey("conversations.id"), primary_key=True)
+    token_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+
+
+class KnowledgeVector(Base):
+    __tablename__ = "knowledge_vectors"
+
+    snapshot_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    chunk_id: Mapped[str] = mapped_column(String(200), primary_key=True)
+    document_id: Mapped[str] = mapped_column(String(200), nullable=False)
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    source_path: Mapped[str] = mapped_column(Text, nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    embedding_model: Mapped[str] = mapped_column(String(200), nullable=False)
+    dimensions: Mapped[int] = mapped_column(Integer, nullable=False)
+    embedding: Mapped[list[float]] = mapped_column(
+        Vector().with_variant(JSON(), "sqlite"), nullable=False
+    )
+
+
+Index("ix_messages_conversation_id_id", Message.conversation_id, Message.id)
+Index("ix_feedback_conversation_id", Feedback.conversation_id)
+Index("ix_feedback_message_id", Feedback.message_id)
+Index("ix_tickets_conversation_id", Ticket.conversation_id)
+Index("ix_tickets_message_id", Ticket.message_id)
+Index("ix_tickets_status_created_at", Ticket.status, Ticket.created_at)

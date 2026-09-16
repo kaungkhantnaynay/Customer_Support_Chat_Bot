@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Support Tickets</title>
+    <link rel="stylesheet" href="/static/styles.css?v=2" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div>
+          <p class="eyebrow">Admin workspace</p>
+          <h1>Tickets</h1>
+        </div>
+        <nav class="nav">
+          <a href="/">Chat</a>
+          <a class="active" href="/admin">Tickets</a>
+          <a href="/docs">API Docs</a>
+        </nav>
+        <section class="panel compact">
+          <h2>Queue</h2>
+          <dl class="metrics">
+            <div>
+              <dt>Open</dt>
+              <dd id="open-count">0</dd>
+            </div>
+            <div>
+              <dt>Total</dt>
+              <dd id="total-count">0</dd>
+            </div>
+          </dl>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Human review</p>
+            <h2>Escalation Queue</h2>
+          </div>
+          <label class="filter">
+            <span>Status</span>
+            <select id="status-filter">
+              <option value="">All</option>
+              <option value="open">Open</option>
+              <option value="in_progress">In progress</option>
+              <option value="resolved">Resolved</option>
+              <option value="closed">Closed</option>
+            </select>
+          </label>
+        </header>
+
+        <section class="ticket-grid" id="tickets" aria-live="polite"></section>
+      </main>
+    </div>
+
+    <script src="/static/admin.js?v=2"></script>
+  </body>
+</html>

@@ -3,7 +3,7 @@ x-app: &app
   build: .
   environment: &environment
     APP_ENV: production
-    DATABASE_URL: sqlite+aiosqlite:////app/runtime/dev.db
+    DATABASE_URL: sqlite:////app/runtime/dev.db
     KNOWLEDGE_BASE_DIR: data/knowledge_base
     AI_MODE: ${AI_MODE:-offline}
     ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}

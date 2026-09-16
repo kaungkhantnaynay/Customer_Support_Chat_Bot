@@ -22,7 +22,7 @@ Build a realistic AI support system that can:
 - SQLite for local development
 - OpenAI API for generation and embeddings
 - pytest + Ruff
-- Ragas or custom eval scripts for RAG quality checks
+- Custom offline and live evaluation workflows for RAG quality checks
 
 ## Quick Start
 

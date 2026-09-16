@@ -10,8 +10,8 @@ uv sync --locked --group dev
 cp .env.example .env
 ```
 
-The optional `eval` dependency group contains Ragas for future work. It is not
-needed for the custom offline evaluator or CI.
+The custom offline evaluator and CI use the standard locked development environment;
+no separate evaluation dependency group is required.
 
 ## Run The API
 

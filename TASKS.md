@@ -64,6 +64,7 @@
 - [x] Add production database migrations and PostgreSQL/pgvector integration.
 - [x] Verify desktop chat/admin flows and the Docker build (see docs/VERIFICATION.md).
 - [x] Add bounded live evaluation tooling, a held-out dataset, and threshold analysis.
+- [x] Remove machine-specific editor metadata and unused evaluation/async dependencies.
 - [ ] Run live OpenAI quality evaluation and calibrate semantic confidence thresholds (blocked by exhausted API credit balance).
 
 ## Phase 8: BeanCO Integration

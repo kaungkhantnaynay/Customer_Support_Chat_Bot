@@ -7,10 +7,12 @@ schema; `0002` adds persistent knowledge vectors and indexes for conversation
 history, feedback references, and ticket queries. Runtime requests verify the
 migration revision instead of creating tables.
 
-SQLite remains supported for local development. PostgreSQL uses the Psycopg 3
-driver and SQLAlchemy connection pooling with connection health checks. URLs
-starting with `postgres://` or `postgresql://` are normalized to Psycopg without
-losing encoded passwords or connection options.
+SQLite remains supported for local development through SQLAlchemy's synchronous
+driver. PostgreSQL uses the Psycopg 3 driver and SQLAlchemy connection pooling
+with connection health checks. URLs starting with `postgres://` or
+`postgresql://` are normalized to Psycopg without losing encoded passwords or
+connection options. Older `sqlite+aiosqlite://` local URLs remain normalized for
+compatibility, but new configuration uses `sqlite://`.
 
 ## Local Setup
 

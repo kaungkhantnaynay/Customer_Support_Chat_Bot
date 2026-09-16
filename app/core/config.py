@@ -37,7 +37,7 @@ class Settings(BaseSettings):
                 raise ValueError("pgvector requires OpenAI mode and a PostgreSQL database URL.")
         return self
 
-    database_url: str = "sqlite+aiosqlite:///./data/dev.db"
+    database_url: str = "sqlite:///./data/dev.db"
     knowledge_base_dir: Path = Path("data/knowledge_base")
     log_level: str = "INFO"
 

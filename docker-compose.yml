@@ -8,6 +8,7 @@ x-app: &app
     AI_MODE: ${AI_MODE:-offline}
     ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
     ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    SUPPORT_API_TOKEN: ${SUPPORT_API_TOKEN:-}
     OPENAI_API_KEY: ${OPENAI_API_KEY:-}
   volumes:
     - support-data:/app/runtime

@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     support_port: int = Field(default=8000, ge=1, le=65535)
     admin_username: str = "admin"
     admin_password: str = ""
+    support_api_token: str = Field(default="", repr=False, exclude=True)
     openai_api_key: str = ""
     vector_store: Literal["local", "pgvector"] = "local"
     ai_mode: Literal["offline", "openai"] = "offline"

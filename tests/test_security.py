@@ -21,6 +21,46 @@ def test_unconfigured_admin_is_disabled(monkeypatch):
     assert TestClient(app).get("/admin").status_code == 503
 
 
+@pytest.mark.parametrize(
+    ("method", "path", "payload"),
+    [
+        ("get", "/knowledge/search?q=shipping", None),
+        ("post", "/chat", {"message": "Shipping time?"}),
+        (
+            "post",
+            "/feedback",
+            {"conversation_id": 1, "conversation_token": "test", "rating": 5},
+        ),
+    ],
+)
+def test_support_routes_require_configured_service_token(monkeypatch, method, path, payload):
+    monkeypatch.setattr(settings, "support_api_token", "shared-test-token")
+    client = TestClient(app)
+
+    response = client.request(method, path, json=payload)
+    assert response.status_code == 401
+
+    response = client.request(
+        method,
+        path,
+        json=payload,
+        headers={"X-Support-Token": "incorrect"},
+    )
+    assert response.status_code == 401
+
+
+def test_support_route_accepts_configured_service_token(monkeypatch):
+    monkeypatch.setattr(settings, "support_api_token", "shared-test-token")
+
+    response = TestClient(app).post(
+        "/chat",
+        json={"message": "Shipping time?"},
+        headers={"X-Support-Token": "shared-test-token"},
+    )
+
+    assert response.status_code == 200
+
+
 def test_conversation_access_and_feedback_validation():
     client = TestClient(app)
     first = client.post("/chat", json={"message": "Shipping time?"}).json()

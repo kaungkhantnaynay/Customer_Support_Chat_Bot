@@ -12,6 +12,7 @@ from app.main import app
 @pytest.fixture(autouse=True)
 def isolated_database_and_admin(monkeypatch):
     monkeypatch.setattr(settings, "admin_password", "test-admin-password")
+    monkeypatch.setattr(settings, "support_api_token", "")
     monkeypatch.setattr(settings, "ai_mode", "offline")
     monkeypatch.setattr(settings, "vector_store", "local")
     engine = create_engine(

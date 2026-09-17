@@ -2,12 +2,24 @@ import hashlib
 import secrets
 from typing import Annotated
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, Header, HTTPException
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from app.core.config import settings
 
 basic = HTTPBasic(auto_error=False)
+
+
+def require_support_service(
+    support_token: Annotated[str | None, Header(alias="X-Support-Token")] = None,
+) -> None:
+    configured = settings.support_api_token.strip()
+    if not configured:
+        return
+    if support_token is None or not secrets.compare_digest(
+        support_token.encode(), configured.encode()
+    ):
+        raise HTTPException(status_code=401, detail="Support service authentication required.")
 
 
 def require_admin(

@@ -3,9 +3,10 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from openai import OpenAIError
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.core.security import require_admin, token_digest
+from app.core.security import require_admin, require_support_service, token_digest
 from app.db.models import ConversationAccess, Message
 from app.db.session import get_session
 from app.schemas.chat import ChatRequest, ChatResponse, FeedbackRequest, FeedbackResponse
@@ -20,7 +21,8 @@ router = APIRouter()
 
 
 @router.get("/health", response_model=HealthResponse, tags=["system"])
-async def health() -> HealthResponse:
+def health(session: Annotated[Session, Depends(get_session)]) -> HealthResponse:
+    session.execute(text("SELECT 1"))
     return HealthResponse(status="ok")
 
 
@@ -33,7 +35,12 @@ async def root() -> dict[str, str]:
     }
 
 
-@router.get("/knowledge/search", response_model=KnowledgeSearchResponse, tags=["knowledge"])
+@router.get(
+    "/knowledge/search",
+    response_model=KnowledgeSearchResponse,
+    tags=["knowledge"],
+    dependencies=[Depends(require_support_service)],
+)
 def search_knowledge(
     q: str = Query(min_length=2, description="Customer question or search query."),
     limit: int = Query(default=3, ge=1, le=5),
@@ -59,7 +66,12 @@ def search_knowledge(
     )
 
 
-@router.post("/chat", response_model=ChatResponse, tags=["chat"])
+@router.post(
+    "/chat",
+    response_model=ChatResponse,
+    tags=["chat"],
+    dependencies=[Depends(require_support_service)],
+)
 def chat(
     request: ChatRequest,
     session: Annotated[Session, Depends(get_session)],
@@ -70,7 +82,12 @@ def chat(
     return service.answer(request)
 
 
-@router.post("/feedback", response_model=FeedbackResponse, tags=["chat"])
+@router.post(
+    "/feedback",
+    response_model=FeedbackResponse,
+    tags=["chat"],
+    dependencies=[Depends(require_support_service)],
+)
 async def feedback(
     request: FeedbackRequest,
     session: Annotated[Session, Depends(get_session)],

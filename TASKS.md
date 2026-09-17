@@ -73,4 +73,5 @@
 - [x] Add a BeanCO offline evaluation dataset.
 - [x] Document the same-origin storefront integration and server-only configuration boundary.
 - [x] Connect the BeanCO storefront through its Next.js server and add an accessible support widget.
+- [x] Prepare a secured Render deployment blueprint and Vercel service-token boundary.
 - [ ] Deploy the support service and set BeanCO's production `SUPPORT_API_BASE_URL` after hosting is chosen.

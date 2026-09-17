@@ -1,5 +1,19 @@
 # Local Release Verification
 
+## BeanCO Render Preparation - September 17, 2026
+
+- `pytest -q`: 96 passed, 3 PostgreSQL-only checks skipped locally.
+- `ruff check .`: passed.
+- Generic offline evaluation: 27 examples and 138/138 checks passed.
+- BeanCO offline evaluation: 10 examples and 50/50 checks passed.
+- `render.yaml` passed Render's current official JSON Schema validation.
+- Built and ran the production image as non-root user `app`.
+- Verified migrations on a clean database, runtime `PORT` binding, database-aware
+  `/health`, a `401` response without `X-Support-Token`, and a grounded BeanCO answer
+  with the correct token.
+- The disposable container, volume, image, and evaluation outputs were removed or
+  written outside the repository after verification.
+
 ## Portfolio Review - September 12, 2026
 
 - `pytest -q`: 91 passed, 3 skipped.

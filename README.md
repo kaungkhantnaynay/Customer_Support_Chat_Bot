@@ -244,3 +244,5 @@ uv run --locked python scripts/run_evaluation.py --dataset data/evaluation/beanc
 ```
 
 See [BeanCO storefront integration](docs/BEANCO_INTEGRATION.md) for the trust boundary, BeanCO configuration, and production notes.
+The Render-specific Blueprint and launch sequence are documented in
+[Render deployment](docs/RENDER_DEPLOYMENT.md).

@@ -30,6 +30,19 @@ def test_migrations_create_schema_and_match_models(database):
     migrate(database)
 
 
+def test_migrations_preserve_unrelated_application_tables(database):
+    with database.begin() as connection:
+        connection.execute(text("CREATE TABLE django_migrations (id INTEGER PRIMARY KEY)"))
+        connection.execute(text("INSERT INTO django_migrations (id) VALUES (1)"))
+
+    migrate(database)
+
+    assert "django_migrations" in inspect(database).get_table_names()
+    with database.connect() as connection:
+        assert connection.scalar(text("SELECT COUNT(*) FROM django_migrations")) == 1
+    require_current_schema(database)
+
+
 def legacy_schema(database):
     with database.begin() as connection:
         command.upgrade(migration_config(connection), "0001")

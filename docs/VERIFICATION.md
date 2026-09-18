@@ -2,10 +2,12 @@
 
 ## Render Free Plan Configuration - September 18, 2026
 
-- `pytest -q`: 96 passed, 3 PostgreSQL-only checks skipped locally.
+- `pytest -q`: 97 passed, 3 PostgreSQL-only checks skipped locally.
 - `ruff check .`: passed.
-- `render.yaml` passed Render's current official JSON Schema validation with both
-  the web service and PostgreSQL database on free plans.
+- `render.yaml` passed Render's current official JSON Schema validation with the
+  web service on the free plan and `DATABASE_URL` supplied at deployment time.
+- Migration coverage verifies unrelated application tables are preserved when the
+  support schema is installed into BeanCO's shared preview database.
 - Verified the revised startup sequence applies migrations to a clean database,
   starts the API on the runtime port, and returns `200` from `/health`.
 - Docker Desktop was not running, so the image was not rebuilt for this

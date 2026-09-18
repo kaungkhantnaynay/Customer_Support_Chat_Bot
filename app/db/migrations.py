@@ -8,6 +8,14 @@ from alembic.script import ScriptDirectory
 from sqlalchemy import MetaData, create_engine, inspect
 
 ROOT = Path(__file__).resolve().parents[2]
+SUPPORT_TABLES = {
+    "conversation_access",
+    "conversations",
+    "feedback",
+    "knowledge_vectors",
+    "messages",
+    "tickets",
+}
 
 
 def migration_config(connection=None):
@@ -29,8 +37,9 @@ def migrate(engine, adopt_legacy=False):
     with engine.begin() as connection:
         config = migration_config(connection)
         tables = set(inspect(connection).get_table_names()) - {"alembic_version"}
+        support_tables = tables & SUPPORT_TABLES
         current = MigrationContext.configure(connection).get_current_heads()
-        if tables and not current:
+        if support_tables and not current:
             if not adopt_legacy:
                 raise ValueError("Unversioned database: back it up, then use --adopt-legacy.")
             # Construct the frozen baseline in a disposable database, never from evolving models.

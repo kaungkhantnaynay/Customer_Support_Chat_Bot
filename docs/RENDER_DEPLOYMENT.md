@@ -1,16 +1,18 @@
 # Render Deployment For BeanCO Support
 
-The repository includes `render.yaml` for a dedicated FastAPI web service and
-PostgreSQL database in Render's Singapore region. It places both resources in the
-existing `BeanCo` project's `Production` environment without managing the existing
-Django API or database. The Blueprint uses Render's free plans for an initial demo
-deployment. Upgrade both resources before treating the service as production-ready.
+The repository includes `render.yaml` for a dedicated FastAPI web service in Render's
+Singapore region. It places the service in the existing `BeanCo` project's
+`Production` environment without managing the existing Django API or database. The
+Blueprint uses Render's free web plan and connects to BeanCO's existing free preview
+database for an initial demo deployment. Separate and upgrade both resources before
+treating the service as production-ready.
 
 The Blueprint configures:
 
 - `beanco-support-api` using the Dockerfile and the BeanCO knowledge pack;
 - a non-root application process with Render's runtime `PORT`;
-- `beanco-support-db` on PostgreSQL 18 with no public database access;
+- a required `DATABASE_URL` supplied from the existing `beanco-preview-db` internal
+  connection URL during Blueprint creation;
 - database migrations during container startup because free web services do not
   support pre-deploy commands;
 - a database-aware `/health` deployment check;
@@ -21,21 +23,23 @@ The Blueprint configures:
 ## Before Creating The Blueprint
 
 1. Confirm the repository's GitHub checks pass on the deployment commit.
-2. Confirm the workspace does not already have a free Render Postgres database;
-   Render permits only one per workspace.
-3. Keep the database separate from BeanCO's Django database.
+2. Copy the internal connection URL from `beanco-preview-db`; provide it only in
+   Render's `DATABASE_URL` secret field during Blueprint creation.
+3. Confirm the database has enough room for the small support dataset.
 
 ## Free Plan Limits
 
 - The web service spins down after 15 minutes without inbound traffic. Its first
   request after that has a cold start.
-- The database is limited to 1 GB, has no managed backups, and expires after 30
-  days. Render provides a further 14-day upgrade grace period before deletion.
+- The shared database is limited to 1 GB, has no managed backups, and expires after
+  30 days. Render provides a further 14-day upgrade grace period before deletion.
 - Render grants 750 free instance hours per workspace each month.
 
-These limits are suitable for testing and demonstrations, not a dependable public
-store. Upgrade the service and database before the database expires if support data
-must be retained.
+These limits and the shared database are suitable for testing and demonstrations,
+not a dependable public store. The support migrations recognize only support-owned
+table names and leave Django's prefixed tables untouched. Move the support service to
+its own paid database before public launch, and upgrade before the preview database
+expires if any data must be retained.
 
 ## After The First Successful Deployment
 

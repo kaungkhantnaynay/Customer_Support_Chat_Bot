@@ -42,6 +42,6 @@ Deploy the support service as a private or separately protected backend where po
 
 The checked-in Render Blueprint, deployment sequence, secrets, and operator actions are
 documented in [Render deployment](RENDER_DEPLOYMENT.md). Production launch still
-requires approving the displayed provider cost, creating the resources, configuring
-Vercel, monitoring, and the live-model calibration described in
+requires upgrading the free preview resources, approving the displayed provider
+cost, configuring Vercel, monitoring, and the live-model calibration described in
 `LIVE_AI_EVALUATION.md`.

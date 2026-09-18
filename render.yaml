@@ -10,10 +10,9 @@ projects:
             name: beanco-support-api
             runtime: docker
             region: singapore
-            plan: 0.5c-512mb
+            plan: free
             autoDeployTrigger: checksPass
             healthCheckPath: /health
-            preDeployCommand: uv run --no-sync python scripts/migrate_database.py
             maxShutdownDelaySeconds: 30
             envVars:
               - key: APP_ENV
@@ -39,7 +38,7 @@ projects:
         databases:
           - name: beanco-support-db
             region: singapore
-            plan: 0.1c-256mb
+            plan: free
             postgresMajorVersion: "18"
             databaseName: beanco_support
             user: beanco_support

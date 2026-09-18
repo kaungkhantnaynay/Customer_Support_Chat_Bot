@@ -13,7 +13,6 @@ projects:
             plan: free
             autoDeployTrigger: checksPass
             healthCheckPath: /health
-            maxShutdownDelaySeconds: 30
             envVars:
               - key: APP_ENV
                 value: production

@@ -1,6 +1,6 @@
 # Phase 7: Access Controls And Quality Checks
 
-This phase follows the production-readiness checklist in `TASKS.md`. Access
+This phase follows the production-readiness checklist in `docs/ROADMAP.md`. Access
 controls and optional OpenAI generation were implemented first. This increment
 expands the offline evaluation suite and adds automated CI.
 

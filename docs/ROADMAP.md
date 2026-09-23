@@ -1,4 +1,7 @@
-# Project Tasks
+# Product Roadmap
+
+This roadmap records completed delivery milestones and remaining release work. Detailed
+implementation and verification notes live in the linked phase documents.
 
 ## Phase 1: Foundation
 

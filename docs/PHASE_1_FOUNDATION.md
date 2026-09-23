@@ -148,8 +148,7 @@ uv run ruff check .
 The project rules are stored in:
 
 ```text
-PROJECT_RULES.md
-.codex/rules.md
+CONTRIBUTING.md
 ```
 
 These rules explain how we should build the project:
@@ -166,7 +165,7 @@ These rules explain how we should build the project:
 The roadmap is stored in:
 
 ```text
-TASKS.md
+docs/ROADMAP.md
 ```
 
 It breaks the project into phases:

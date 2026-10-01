@@ -7,6 +7,7 @@ from app.rag.documents import chunk_documents, load_markdown_documents
 from app.rag.retriever import LocalKnowledgeBase
 
 KNOWLEDGE_BASE_DIR = Path("data/knowledge_base")
+BEANCO_KNOWLEDGE_BASE_DIR = Path("data/knowledge_beanco")
 
 
 def test_loads_sample_support_documents() -> None:
@@ -51,3 +52,13 @@ def test_knowledge_search_endpoint_returns_citations() -> None:
     assert payload["query"] == "How long does express shipping take?"
     assert payload["results"]
     assert payload["results"][0]["citation"]
+
+
+def test_beanco_wholesale_suggestion_retrieves_dedicated_source() -> None:
+    knowledge_base = LocalKnowledgeBase.from_directory(BEANCO_KNOWLEDGE_BASE_DIR)
+
+    results = knowledge_base.search("How do I ask about wholesale?", min_score=0.12)
+
+    assert results
+    assert results[0].chunk.document_id == "wholesale_and_partnerships"
+    assert "Select Wholesale" in results[0].chunk.text

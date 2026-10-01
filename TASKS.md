@@ -70,6 +70,7 @@
 ## Phase 8: BeanCO Integration
 
 - [x] Add a BeanCO-specific knowledge pack without changing the generic benchmark corpus.
+- [x] Add dedicated wholesale and partnership guidance with exact-question retrieval coverage.
 - [x] Add a BeanCO offline evaluation dataset.
 - [x] Document the same-origin storefront integration and server-only configuration boundary.
 - [x] Connect the BeanCO storefront through its Next.js server and add an accessible support widget.

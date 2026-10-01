@@ -233,6 +233,8 @@ checks and their limits. Live-model evaluation remains deferred.
 
 This service can power the BeanCO storefront with a separate, store-specific knowledge pack. Run it locally on port 8001 while BeanCO's Django API uses port 8000:
 
+The BeanCO pack includes dedicated guidance for wholesale and partnership inquiries, including the implemented Contact-form fields and human-review boundaries.
+
 ```bash
 KNOWLEDGE_BASE_DIR=data/knowledge_beanco uv run uvicorn app.main:app --port 8001
 ```
